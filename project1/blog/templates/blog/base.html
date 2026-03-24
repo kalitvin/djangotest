@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Учебный блог{% endblock %}</title>
+</head>
+<body>
+<header>
+    <h1>Учебный блог на Django</h1>
+    <nav>
+        <a href="{% url 'home' %}">Главная</a> |
+        <a href="{% url 'post_list' %}">Блог</a> |
+        <a href="{% url 'about' %}">О проекте</a>
+    </nav>
+    <hr>
+</header>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    <hr>
+    <p>&copy; 2026 Учебный курс по Django</p>
+</footer>
+</body>
+</html>

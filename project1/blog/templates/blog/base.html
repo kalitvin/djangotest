@@ -9,6 +9,16 @@
 </head>
 <body>
 <header>
+        {% if request.user.is_authenticated %}
+          Привет, {{ request.user.username }} |
+          <form method="post" action="{% url 'logout' %}">
+           {% csrf_token %}
+           <button type="submit">Выйти</button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}">Вход</a> |
+          <a href="{% url 'signup' %}">Регистрация</a>
+        {% endif %}
     <h1>Учебный блог на Django!!!</h1>
     {% include "blog/_nav.html" %}
     <hr>

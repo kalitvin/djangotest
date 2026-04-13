@@ -1,0 +1,15 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Создание поста{% endblock %}
+
+{% block content %}
+    <h2>Создать новый пост</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Сохранить</button>
+    </form>
+
+    <p><a href="{% url 'post_list' %}">← Вернуться к списку постов</a></p>
+{% endblock %}

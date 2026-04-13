@@ -17,7 +17,8 @@ Including another URLconf
 from blog import views
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+
 
 
 urlpatterns = [
@@ -25,4 +26,10 @@ urlpatterns = [
     path("", views.home, name="home"), # главная страница
     path("about/", views.about , name="about"), # О проекте
     path("post_list/", views.post_list , name="post_list"), # Список постов
+    path("blog/<int:pk>/", views.post_detail, name="post_detail"), # Детализация поста
+    path("blog/create/", views.post_create, name="post_create"),
+    path("blog/<int:pk>/edit/", views.post_edit, name="post_edit"),
+    path("blog/<int:pk>/delete/", views.post_delete, name="post_delete"),
+    path("accounts/", include("django.contrib.auth.urls")),
+    path("accounts/signup/", views.signup, name="signup"),
 ]

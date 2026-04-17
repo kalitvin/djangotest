@@ -4,8 +4,8 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
-from .models import Post
-from blog.forms import *
+from .models import Post, Comment
+from .forms import *
 
 
 
@@ -49,7 +49,23 @@ def post_list(request):
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk, is_published=True)
     comments = post.comments.all().order_by("-created_at")
-    context = {"post": post}
+
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.save()
+            return redirect("post_detail", pk=post.pk)
+    else:
+        form = CommentForm()
+
+    context = {
+        "post": post,
+        "comments": comments,
+        "form": form,
+    }
+    # context = {"post": post}
     return render(request, "blog/post_detail.html", context)
 
 def post_create(request):

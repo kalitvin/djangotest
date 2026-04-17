@@ -26,11 +26,6 @@
                     <a href="{% url 'post_detail' pk=post.pk %}">Подробнее…</a>
                 </p>
 
-          <-- 
-          <strong>{{ post.title }}</strong><br>
-          <small>Создано: {{ post.created_at|date:"d.m.Y H:i" }}</small><br>
-          <p>{{ post.body }}</p>
-          -->
           <a href="{% url 'post_edit' pk=post.pk %}">Редактировать</a>
           <a href="{% url 'post_delete' pk=post.pk %}">Удалить</a>
         </li>

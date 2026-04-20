@@ -31,5 +31,5 @@ urlpatterns = [
     path("blog/<int:pk>/edit/", views.post_edit, name="post_edit"),
     path("blog/<int:pk>/delete/", views.post_delete, name="post_delete"),
     path("accounts/", include("django.contrib.auth.urls")),
-    path("accounts/signup/", views.signup, name="signup"),
+    path("accounts/", include("accounts.urls")),
 ]

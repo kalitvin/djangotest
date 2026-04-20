@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.db.models import Q
@@ -21,6 +22,7 @@ def about(request):
 
 # def post_list(request):
 #   return render(request, "blog/post_list.html")
+
 
 def post_list(request):
     query = request.GET.get("q", "").strip()
@@ -46,40 +48,42 @@ def post_list(request):
     # context = {"posts": posts}
     return render(request, "blog/post_list.html", context)
 
+@login_required
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk, is_published=True)
     comments = post.comments.all().order_by("-created_at")
 
     if request.method == "POST":
+        if not request.user.is_authenticated:
+            return redirect("login")
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
             comment.post = post
+            comment.author = request.user
             comment.save()
             return redirect("post_detail", pk=post.pk)
     else:
         form = CommentForm()
 
-    context = {
-        "post": post,
-        "comments": comments,
-        "form": form,
-    }
-    # context = {"post": post}
+    context = {"post": post, "comments": comments, "form": form}
     return render(request, "blog/post_detail.html", context)
 
+@login_required
 def post_create(request):
     if request.method == "POST":
         form = PostForm(request.POST)
         if form.is_valid():
-            post = form.save()
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
             return redirect("post_detail", pk=post.pk)
     else:
         form = PostForm()
+    return render(request, "blog/post_form.html", {"form": form})
 
-    context = {"form": form}
-    return render(request, "blog/post_form.html", context)
 
+@login_required
 def post_edit(request, pk):
     post = get_object_or_404(Post, pk=pk)
 
@@ -94,6 +98,7 @@ def post_edit(request, pk):
     context = {"form": form, "post": post}
     return render(request, "blog/post_form_edit.html", context)
 
+@login_required
 def post_delete(request, pk):
     post = get_object_or_404(Post, pk=pk)
 

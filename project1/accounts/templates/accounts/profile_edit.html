@@ -1,0 +1,22 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Редактирование профиля{% endblock %}
+
+{% block content %}
+  <h2>Редактирование профиля</h2>
+
+  <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <fieldset>
+          <legend>Данные пользователя</legend>
+          {{ u_form.as_p }}
+      </fieldset>
+
+      <fieldset>
+          <legend>Профиль</legend>
+          {{ p_form.as_p }}
+      </fieldset>
+
+      <button type="submit">Сохранить</button>
+  </form>
+{% endblock %}

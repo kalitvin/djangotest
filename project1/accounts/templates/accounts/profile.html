@@ -1,0 +1,21 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<h2>Профиль пользователя {{ profile_user.username }}</h2>
+  <img src="{{ profile.avatar_url }}" alt="Аватар"
+       style="max-width:150px; max-height:150px; border-radius: 50%;">
+
+  <p><strong>Имя:</strong> {{ profile_user.first_name }} {{ profile_user.last_name }}</p>
+  <p><strong>Email:</strong> {{ profile_user.email }}</p>
+
+  <h3>Дополнительная информация</h3>
+  <p><strong>О себе:</strong> {{ profile.bio|default:"—" }}</p>
+  <p><strong>Город:</strong> {{ profile.location|default:"—" }}</p>
+  <p><strong>Дата рождения:</strong> {{ profile.birth_date|date:"d.m.Y"|default:"—" }}</p>
+
+  {% if request.user == profile_user %}
+    <p><a href="{% url 'profile_edit' %}">Редактировать профиль</a></p>
+  {% endif %}
+{% endblock %}

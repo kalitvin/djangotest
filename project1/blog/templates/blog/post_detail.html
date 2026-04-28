@@ -1,53 +1,64 @@
 {% extends "blog/base.html" %}
-{% block title %}{{post.title }} — Блог{% endblock %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
 {% block content %}
-
-  <h2>{{ post.title }}</h2>
-  <p>
-  <small>
-      Автор: {{ post.author.username|default:"(аноним)" }}<br>
-      Создано: {{ post.created_at|date:"d.m.Y H:i" }}
-  </small>
-  </p>
-
-  <p>
-  <small>Создано: {{ post.created_at|date:"d.m.Y H:i" }}</small>
-  {% if post.updated_at and post.updated_at != post.created_at %}
-    <br><small>Обновлено: {{ post.updated_at|date:"d.m.Y H:i" }}</small>
-  {% endif %}
-  </p>
-  <p>{{ post.body }}</p>
-
-  <hr>
-  <h3>Комментарии ({{ comments.count }})</h3>
-  {% if comments %}
-    <ul>
-      {% for comment in comments %}
-        <li>
-      <strong>
-        {% if comment.author %}
-            {{ comment.author.username }}
-        {% else %}
-            Гость
+  <article class="card mb-4">
+    <div class="card-body">
+      <h2 class="card-title">{{ post.title }}</h2>
+      <h6 class="card-subtitle mb-2 text-muted">
+        {{ post.created_at|date:"d.m.Y H:i" }}
+        {% if post.author %}
+          • автор: {{ post.author.username }}
         {% endif %}
-    </strong>,
-    <small>{{ comment.created_at|date:"d.m.Y H:i" }}</small><br>
-        <p>{{ comment.text }}</p>
-          <a href="{% url 'post_edit' pk=post.pk %}">Редактировать</a>
-          <a href="{% url 'post_delete' pk=post.pk %}">Удалить</a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>Пока нет опубликованных комментариев.</p>
-  {% endif %}
-  <hr>
-  <h3>Оставить комментарий</h3>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Отправить</button>
-  </form>
+      </h6>
+      <p class="card-text mt-3">{{ post.body|linebreaks }}</p>
+    </div>
+  </article>
 
-  <p><a href="{% url 'post_list' %}">Вернуться к списку постов</a></p>
+  {% if user == post.author %}
+    <div class="mb-4">
+      <a href="{% url 'post_edit' pk=post.pk %}" class="btn btn-secondary btn-sm">Редактировать</a>
+      <a href="{% url 'post_delete' pk=post.pk %}" class="btn btn-outline-danger btn-sm">Удалить</a>
+    </div>
+  {% endif %}
+
+  <section class="mb-4">
+    <h3>Комментарии</h3>
+    {% if comments %}
+      <ul class="list-group mb-3">
+        {% for comment in comments %}
+          <li class="list-group-item">
+            <strong>
+              {% if comment.author %}
+                {{ comment.author.username }}
+              {% else %}
+                Аноним
+              {% endif %}
+            </strong>
+            <small class="text-muted">
+              • {{ comment.created_at|date:"d.m.Y H:i" }}
+            </small>
+            <br>
+            {{ comment.text|linebreaks }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Комментариев пока нет.</p>
+    {% endif %}
+  </section>
+
+  {% if user.is_authenticated %}
+    <section>
+      <h4>Оставить комментарий</h4>
+      <form method="post" class="mt-2">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Отправить</button>
+      </form>
+    </section>
+  {% else %}
+    <p>Чтобы оставлять комментарии, <a href="{% url 'login' %}">войдите</a>.</p>
+  {% endif %}
 {% endblock %}

@@ -1,36 +1,137 @@
 {% load static %}
-
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8">
-    <title>{% block title %}Учебный блог{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>{% block title %}Мой блог{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS через CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    >
+
+    <!-- Ваши стили (опционально) -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+<style>
+.avatar {
+width: 32px;
+height: 32px;
+border-radius: 50%;
+object-fit: cover;
+}
+</style>
+
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
-<header>
-        {% if request.user.is_authenticated %}
-          Привет, {{ request.user.username }} |
-          <form method="post" action="{% url 'logout' %}">
-           {% csrf_token %}
-           <button type="submit">Выйти</button>
-          </form>
-        {% else %}
-          <a href="{% url 'login' %}">Вход</a> |
-          <a href="{% url 'signup' %}">Регистрация</a>
-        {% endif %}
-    <h1>Учебный блог на Django!!!</h1>
-    {% include "blog/_nav.html" %}
-    <hr>
-</header>
 
-<main>
+{% block header %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home' %}">Мой блог</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarMain"
+            aria-controls="navbarMain" aria-expanded="false"
+            aria-label="Переключить навигацию">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'post_list' %}">Посты</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'about' %}">О сайте</a>
+        </li>
+        {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'post_create' %}">Новый пост</a>
+          </li>
+        {% endif %}
+      </ul>
+
+<ul class="navbar-nav mb-2 mb-lg-0 align-items-lg-center">
+  {% if request.user.is_authenticated %}
+    <li class="nav-item me-3 d-flex align-items-center">
+      <span class="d-flex align-items-center">
+        {% if request.user.profile.avatar %}
+          <img src="{{ request.user.profile.avatar.url }}" alt="avatar" class="avatar me-2">
+        {% else %}
+          <img src="{{MEDIA_URL}}avatars/default_avatar.png" alt="avatar" class="avatar me-2">
+        {% endif %}
+        <span class="navbar-text">{{ request.user.username }}</span>
+      </span>
+    </li>
+
+    <li class="nav-item me-2 d-flex align-items-center">
+      <a class="nav-link" href="{% url 'profile' %}">Профиль</a>
+    </li>
+
+    <li class="nav-item d-flex align-items-center">
+      <form method="post" action="{% url 'logout' %}" class="m-0">
+        {% csrf_token %}
+        <button class="btn btn-outline-light btn-sm" type="submit">Выйти</button>
+      </form>
+    </li>
+  {% else %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'login' %}">Вход</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'signup' %}">Регистрация</a>
+    </li>
+  {% endif %}
+</ul>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+<main class="container mt-4">
+    {% if messages %}
+      <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     {% block content %}{% endblock %}
 </main>
 
-<footer>
-    <hr>
-    <p>&copy; 2026 Учебный курс по Django</p>
+<footer class="text-center text-muted py-3 mt-4 border-top">
+    {% block footer %}
+      <small>
+        &copy; {{ now|date:"Y" }} Мой блог.
+        Разработано в рамках учебного курса по Django.
+      </small>
+      <br>
+      <small>
+        <a href="{% url 'about' %}">О сайте</a>
+        {% if request.user.is_authenticated %}
+          &bullet;
+          <a href="{% url 'profile' %}">Мой профиль</a>
+        {% endif %}
+      </small>
+    {% endblock %}
 </footer>
+
+<!-- Bootstrap JS (bundle) -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+  crossorigin="anonymous"
+></script>
+
+{% block extra_scripts %}{% endblock %}
 </body>
 </html>
